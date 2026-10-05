@@ -18,6 +18,43 @@
       </article>
     </div>
 
+    <section class="card-block">
+      <h3>掘进在办清单（在场盾构机，取自设备档案）</h3>
+      <p v-if="shieldError" class="error-text">
+        在场盾构机读取失败：{{ shieldError }}，未展示旧数据，<button class="link" type="button" @click="reloadShields">重试</button>
+      </p>
+      <table v-else class="data-table compact">
+        <thead>
+          <tr>
+            <th>盾构机编号</th>
+            <th>盾构机型号</th>
+            <th>开挖直径</th>
+            <th>维保单位</th>
+            <th>设备状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in activeShields" :key="String(item.id)">
+            <td>{{ item['盾构机编号'] }}</td>
+            <td>{{ item['盾构机型号'] }}</td>
+            <td>{{ item['开挖直径'] || '—' }}</td>
+            <td>{{ item['维保单位'] || '—' }}</td>
+            <td>{{ item.status }}</td>
+          </tr>
+          <tr v-if="!activeShields.length">
+            <td colspan="5" class="empty-state">设备档案里当前没有掘进中的在场盾构机</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="5" class="muted small">
+              在办 {{ activeShields.length }} 台 · 在场 {{ kpi.onSite }} 台，与盾构机在场看板同源同数。
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+
     <p class="status-legend">
       <span v-for="item in statusSummary" :key="item.status" class="legend-item">
         {{ item.status }}：{{ item.count }}
@@ -79,6 +116,8 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { useShieldData } from '@/composables/useShieldData'
+import { activeBoringShields, shieldKpi } from '@/data/shield'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('ring')
@@ -86,6 +125,11 @@ const columns = ["环号", "起始里程", "掘进速度", "总推力", "刀盘�
 const actions = ["开始掘进", "确认完成", "申请纠偏"]
 const statuses = ["待掘进", "掘进中", "已贯通", "已纠偏"]
 const stats = [{"label": "本月掘进环数", "value": 0}, {"label": "平均掘进速度", "value": 0}, {"label": "纠偏环数", "value": 0}]
+
+// 在办清单：直接从设备档案派生，盾构机状态一改，订阅推送过来即更新，不存在两个数。
+const { rows: shieldRows, errorMessage: shieldError, reload: reloadShields } = useShieldData()
+const activeShields = computed(() => activeBoringShields(shieldRows.value))
+const kpi = computed(() => shieldKpi(shieldRows.value))
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
