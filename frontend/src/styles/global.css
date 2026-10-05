@@ -35,3 +35,36 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .error-text { color: #b42318; }
 .status-legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 10px; font-size: 12px; color: var(--muted); }
 .legend-item { background: #eef2f7; border-radius: 999px; padding: 2px 10px; }
+
+/* 盾构机在场看板 */
+.role-badge { font-size: 12px; color: var(--muted); align-self: center; }
+.role-badge.readonly { color: #b42318; }
+.role-select { font-size: 12px; }
+.unit-summary-title { background: #dbe7ff; color: #1f2937; }
+.board-row { display: flex; gap: 12px; align-items: flex-start; }
+.board-column { flex: 1; min-width: 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+.board-column-head { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.board-column-head.clickable { cursor: pointer; }
+.maintenance-column.collapsed { flex: 0 0 auto; background: #f1f5f9; }
+.maintenance-column.collapsed .board-column-head { writing-mode: vertical-rl; margin: 0 auto; }
+.machine-card { border: 1px solid var(--border); border-radius: 6px; padding: 8px; margin-bottom: 8px; cursor: pointer; background: #fff; }
+.machine-card:hover { border-color: var(--brand); }
+.machine-card.active { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); }
+.machine-card.maintenance { background: #fff7ed; }
+.machine-code { font-size: 13px; }
+.machine-fields { margin: 6px 0; font-size: 12px; }
+.machine-fields div, .detail-fields div { display: flex; gap: 6px; margin-bottom: 4px; }
+.machine-fields dt, .detail-fields dt { color: var(--muted); flex: 0 0 auto; }
+.machine-fields dd, .detail-fields dd { margin: 0; }
+.stop-badge { display: inline-block; font-size: 12px; color: #9a3412; background: #ffedd5; border-radius: 999px; padding: 1px 8px; }
+.presence-strip .legend-item { background: #e0ecff; color: #1f2937; }
+.archive-notice { font-size: 12px; color: var(--muted); background: #eef2f7; border-radius: 6px; padding: 6px 10px; margin: 0 0 12px; }
+.drawer-mask { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.35); display: flex; justify-content: flex-end; z-index: 20; }
+.drawer { width: 380px; max-width: 90vw; background: #fff; height: 100%; padding: 16px; overflow-y: auto; }
+.drawer-head { display: flex; justify-content: space-between; align-items: center; }
+.drawer-head h3 { margin: 0; font-size: 15px; }
+.drawer-note { font-size: 12px; color: var(--muted); }
+.detail-fields { font-size: 13px; margin: 12px 0; }
+.detail-fields input { flex: 1; min-width: 0; border: 1px solid var(--border); border-radius: 4px; padding: 4px 6px; }
+.drawer-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ok-text { color: #067647; }

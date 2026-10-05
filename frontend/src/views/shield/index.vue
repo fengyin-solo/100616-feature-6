@@ -11,6 +11,11 @@
       </div>
     </header>
 
+    <p class="archive-notice">
+      盾构机状态与台数以设备档案为准，办理进场、调试、退场与检修请前往
+      <RouterLink to="/shield-board">盾构机在场看板</RouterLink>；本页数据随档案同步。
+    </p>
+
     <div class="stat-row">
       <article v-for="item in stats" :key="item.label" class="stat-card">
         <span class="stat-label">{{ item.label }}</span>
@@ -71,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import {
   downloadEntries,
@@ -79,6 +84,7 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { onArchiveChange } from '@/api/shield-board-service'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('shield')
@@ -133,5 +139,15 @@ function reload() {
   }
 }
 
-onMounted(reload)
+let unsubscribe: (() => void) | null = null
+
+onMounted(() => {
+  reload()
+  // 档案提交后旧台账会被同步，这里跟着刷新，避免看到上一版。
+  unsubscribe = onArchiveChange(reload)
+})
+
+onBeforeUnmount(() => {
+  unsubscribe?.()
+})
 </script>

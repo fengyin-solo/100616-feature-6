@@ -24,6 +24,13 @@
       </span>
     </p>
 
+    <p class="status-legend presence-strip">
+      <span class="legend-item">在场盾构机 {{ presence.在场 }} 台</span>
+      <span class="legend-item">掘进中 {{ presence.掘进中 }} · 调试中 {{ presence.调试中 }} · 检修中 {{ presence.检修中 }}</span>
+      <span class="legend-item">还在路上 {{ presence.在路上 }} 台</span>
+      <span v-if="presence.在场编号.length" class="legend-item">在场：{{ presence.在场编号.join('、') }}</span>
+    </p>
+
     <form class="filter-bar" @submit.prevent="reload">
       <label v-for="field in filterFields" :key="field" class="filter-item">
         <span>{{ field }}</span>
@@ -71,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import {
   downloadEntries,
@@ -79,6 +86,7 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { getShieldPresence, onArchiveChange, type ShieldPresence } from '@/api/shield-board-service'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('ring')
@@ -91,6 +99,8 @@ const rows = ref<EntryRow[]>([])
 const total = ref(0)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
+// 在场台数与看板取同一份设备档案，档案一变这里跟着更新，不会出现两个数。
+const presence = ref<ShieldPresence>(getShieldPresence())
 const filterFields = columns.slice(0, 3)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
@@ -133,5 +143,16 @@ function reload() {
   }
 }
 
-onMounted(reload)
+let unsubscribe: (() => void) | null = null
+
+onMounted(() => {
+  reload()
+  unsubscribe = onArchiveChange(() => {
+    presence.value = getShieldPresence()
+  })
+})
+
+onBeforeUnmount(() => {
+  unsubscribe?.()
+})
 </script>

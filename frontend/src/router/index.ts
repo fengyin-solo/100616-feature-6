@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import Dashboard from '@/views/Dashboard.vue'
 const Shield = () => import('@/views/shield/index.vue')
+const ShieldBoard = () => import('@/views/shield-board/index.vue')
 const Ring = () => import('@/views/ring/index.vue')
 const Segment = () => import('@/views/segment/index.vue')
 const Grouting = () => import('@/views/grouting/index.vue')
@@ -25,6 +26,7 @@ const router = createRouter({
   routes: [
     { path: '/', name: 'dashboard', component: Dashboard },
     { path: '/shield', name: 'shield', component: Shield },
+    { path: '/shield-board', name: 'shield-board', component: ShieldBoard },
     { path: '/ring', name: 'ring', component: Ring },
     { path: '/segment', name: 'segment', component: Segment },
     { path: '/grouting', name: 'grouting', component: Grouting },

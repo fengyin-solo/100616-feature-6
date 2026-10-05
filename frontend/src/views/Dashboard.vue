@@ -35,9 +35,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 import { loadOverview } from '@/api/local-service'
+import { onArchiveChange } from '@/api/shield-board-service'
 import type { OverviewResult } from '@/data/types'
 
 const cards = ref<OverviewResult['cards']>([])
@@ -49,5 +50,15 @@ function refresh() {
   moduleRows.value = payload.modules
 }
 
-onMounted(refresh)
+let unsubscribe: (() => void) | null = null
+
+onMounted(() => {
+  refresh()
+  // 设备档案一变，这里的台数跟着一起变，与看板取的是同一份。
+  unsubscribe = onArchiveChange(refresh)
+})
+
+onBeforeUnmount(() => {
+  unsubscribe?.()
+})
 </script>

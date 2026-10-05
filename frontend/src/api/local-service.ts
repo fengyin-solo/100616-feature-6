@@ -1,5 +1,6 @@
 import { MODULE_BY_KEY } from '@/data/modules'
 import { allRows, listRows, resetRows, saveRows } from '@/data/local-store'
+import { getShieldPresence } from '@/api/shield-board-service'
 import type { ActionResult, EntryRow, ModuleMeta, OverviewResult, PageResult } from '@/data/types'
 
 // 会写进数据的「往回走」动作：命中就把这条记录标成异常态，看板上能一眼看出来。
@@ -86,7 +87,17 @@ export function downloadEntries(key: string): void {
 
 export function loadOverview(): OverviewResult {
   const rows = allRows()
+  // 盾构机台数与在场看板、掘进环次取同一份设备档案，其他页面随之对齐。
+  const shieldPresence = getShieldPresence()
   const modules = [...MODULE_BY_KEY.values()].map((meta) => {
+    if (meta.key === 'shield') {
+      return {
+        name: meta.name,
+        created: shieldPresence.总数,
+        pending: shieldPresence.待进场 + shieldPresence.调试中,
+        abnormal: shieldPresence.检修中,
+      }
+    }
     const entries = rows[meta.key] ?? []
     return {
       name: meta.name,
@@ -98,6 +109,7 @@ export function loadOverview(): OverviewResult {
   const cards = [
     { label: '业务模块', value: modules.length },
     { label: '登记总量', value: modules.reduce((sum, item) => sum + item.created, 0) },
+    { label: '在场盾构机', value: shieldPresence.在场 },
     { label: '待处理', value: modules.reduce((sum, item) => sum + item.pending, 0) },
     { label: '异常量', value: modules.reduce((sum, item) => sum + item.abnormal, 0) },
   ]
